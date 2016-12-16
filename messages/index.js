@@ -6,8 +6,11 @@ https://docs.botframework.com/en-us/node/builder/chat/dialogs/#waterfall
 "use strict";
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
+var blockchain = require("./blockchain");
 
-var useEmulator = (process.env.NODE_ENV == 'development');
+// var useEmulator = (process.env.NODE_ENV == 'development');
+
+var useEmulator = true;
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
     appId: process.env['MicrosoftAppId'],
@@ -20,21 +23,55 @@ var bot = new builder.UniversalBot(connector);
 
 bot.dialog('/', [
     function (session) {
-        builder.Prompts.text(session, "Hello... What's your name?");
+        builder.Prompts.text(session, "Ciao... What's your name?");
     },
     function (session, results) {
-        session.userData.name = results.response;
-        builder.Prompts.number(session, "Hi " + results.response + ", How many years have you been coding?"); 
+        blockchain.createAccounts(function(addr) {
+            session.userData.name       = results.response;
+            session.userData.accounts   = addr
+            
+            if(addr) {
+                if(Array.isArray(addr)) {
+                    if(addr.length > 0) {
+                        session.send("Hi " + results.response + ", you have " + addr.length  + " Ethereum account(s)");
+                        session.beginDialog('/accounts');
+                    }
+                }
+            }
+            else {
+                session.send("Hi " + results.response + ", it looks like you don't have any Ethereum accounts");
+                session.beginDialog('/end');
+            }
+        });
+    }
+]);
+
+bot.dialog('/accounts',[
+    function(session) {
+        builder.Prompts.choice(session, "What account are you going to use?", session.userData.accounts);
     },
     function (session, results) {
-        session.userData.coding = results.response;
-        builder.Prompts.choice(session, "What language do you code Node using?", ["JavaScript", "CoffeeScript", "TypeScript"]);
+        session.userData.selection = results.response.entity;
+    
+        session.send("Ok, balance for account [" + session.userData.selection + "] ...");
     },
-    function (session, results) {
-        session.userData.language = results.response.entity;
-        session.send("Got it... " + session.userData.name + 
-                    " you've been programming for " + session.userData.coding + 
-                    " years and use " + session.userData.language + ".");
+    function(session) {
+        blockchain.getBalance(session.userData.selection, function(balance){
+            session.send("Account balance for " + session.userData.selection + " is " + balance);
+            session.beginDialog('/end');
+        });
+    }
+]);
+
+bot.dialog('/end',[
+    function(session) {
+        session.send("Ciao " + session.userData.name + " !");
+    }
+]);
+
+bot.dialog('/error',[
+    function(session) {
+        session.send("Ops, " + session.userData.name + " I've got a problem here");
     }
 ]);
 
