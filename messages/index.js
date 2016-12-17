@@ -8,9 +8,9 @@ var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var blockchain = require("./blockchain");
 
-// var useEmulator = (process.env.NODE_ENV == 'development');
+var useEmulator = (process.env.NODE_ENV == 'development');
 
-var useEmulator = true;
+// var useEmulator = true;
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
     appId: process.env['MicrosoftAppId'],
@@ -75,6 +75,7 @@ bot.dialog('/balance',[
     function(session) {
 
         console.log('get balance called');
+        session.sendTyping();
     
         blockchain.createAccounts(function(addr) {
 

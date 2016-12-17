@@ -7,9 +7,9 @@ var HookedWeb3Provider  = require("hooked-web3-provider");
 var keyStore            = lightwallet.keystore;
 // var seed             = keyStore.generateRandomSeed();
 var seed                = "fuel govern lady blast ceiling zone long trigger session hat cupboard grass";
-var host                = "http://rega53j4n.eastus.cloudapp.azure.com:8545";
+var host                = "http://regakrlby.westeurope.cloudapp.azure.com:8545";
 var pswd                = "!ReGa!2016";
-var contractAddr        = "0x6cd0f3b9e9e3191dfef4c5f1572e4ca0cbfb4f3c";
+var contractAddr        = "0x8d7b8def6c70a78a7d08ae9c036f907dca009d4f";
 
 var abi                 = [{"constant":true,"inputs":[{"name":"_level","type":"uint256"}],"name":"getPool","outputs":[{"name":"_pool","type":"address"}],"type":"function"},{"constant":false,"inputs":[{"name":"_parent","type":"address"}],"name":"setParent","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_dr","type":"uint8"},{"name":"_cr","type":"uint8"},{"name":"_amount","type":"int256"}],"name":"posting","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_number","type":"int256"},{"name":"_case","type":"int256"}],"name":"update","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"_amount","type":"int256"}],"name":"invest","outputs":[],"type":"function"},{"constant":true,"inputs":[],"name":"parent","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"type":"function"},{"constant":true,"inputs":[],"name":"isValid","outputs":[{"name":"_valid","type":"bool"}],"type":"function"},{"constant":true,"inputs":[],"name":"score","outputs":[{"name":"","type":"uint256"}],"type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"accounts","outputs":[{"name":"","type":"int256"}],"type":"function"},{"inputs":[{"name":"_score","type":"uint256"},{"name":"_owner","type":"address"}],"type":"constructor"}];
 
@@ -26,7 +26,7 @@ var blockchain = function() {};
             
             this.kstore = ks;
 
-            console.log("blockchain.createAccounts.createVault seed [" + seed + "]");
+            console.info("blockchain.createAccounts.createVault seed [" + seed + "]");
 
             this.kstore.keyFromPassword(pswd, function (err, pwDerivedKey) {
                 if (err) throw err;
@@ -54,8 +54,6 @@ var blockchain = function() {};
 
         if(web3 == null)
             throw new Error('getBalance: Web3 provider is null');
-
-        console.log("blockchain.getBalance : balance for account" + acc);
 
         web3.eth.getBalance(acc, function(err, balance) {
              if (err) 
