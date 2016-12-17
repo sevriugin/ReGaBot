@@ -1,10 +1,12 @@
 var Web3                = require('web3');
+var web3                = new Web3();
 
 var lightwallet         = require('eth-lightwallet');
 var HookedWeb3Provider  = require("hooked-web3-provider");
 
 var keyStore            = lightwallet.keystore;
-var seed                = keyStore.generateRandomSeed();
+// var seed             = keyStore.generateRandomSeed();
+var seed                = "fuel govern lady blast ceiling zone long trigger session hat cupboard grass";
 var host                = "http://rega53j4n.eastus.cloudapp.azure.com:8545";
 var pswd                = "!ReGa!2016";
 var contractAddr        = "0x6cd0f3b9e9e3191dfef4c5f1572e4ca0cbfb4f3c";
@@ -16,7 +18,6 @@ var blockchain = function() {};
     blockchain.addr     = [];
     blockchain.kstore   = null;
     blockchain.provider = null;
-    blockchain.web3     = null;
     
     blockchain.prototype.createAccounts = function(success) {
        
@@ -24,6 +25,8 @@ var blockchain = function() {};
             if (err) throw err;
             
             this.kstore = ks;
+
+            console.log("blockchain.createAccounts.createVault seed [" + seed + "]");
 
             this.kstore.keyFromPassword(pswd, function (err, pwDerivedKey) {
                 if (err) throw err;
@@ -40,9 +43,7 @@ var blockchain = function() {};
     	            transaction_signer: this.kstore
                 });
 
-                this.web3 = new Web3();
-
-                this.web3.setProvider(this.provider);
+                web3.setProvider(this.provider);
 
                 success(this.addr);
             });
@@ -51,10 +52,12 @@ var blockchain = function() {};
 
     blockchain.prototype.getBalance = function(acc, success) {
 
-        if(this.web3 == null)
+        if(web3 == null)
             throw new Error('getBalance: Web3 provider is null');
 
-        this.web3.eth.getBalance(acc, function(err, balance) {
+        console.log("blockchain.getBalance : balance for account" + acc);
+
+        web3.eth.getBalance(acc, function(err, balance) {
              if (err) 
                 throw err;
              else
@@ -64,10 +67,36 @@ var blockchain = function() {};
 
     blockchain.prototype.getAccount = function(accId) {
         
+        if(this.addr == null)
+            throw new Error('getAccount: accounts is null');
+        if(this.addr.length == 0)
+            throw new Error('getAccount: accounts is empty');
+
         if(accId < 0 || accId >= this.addr.length) {
             throw new Error('getAccount: Invalid account ID - out of range');
         }
         return this.addr[accId];
+    };
+
+    blockchain.prototype.invest = function(acc, amount, success) {
+        
+        if(web3 == null)
+            throw new Error('invest: Web3 provider is null');
+        
+        var contract    = web3.eth.contract(abi);
+        var instance    = contract.at(contractAddr);
+
+        var gas         = 500000;
+        var gasPrice    = web3.toWei(20, "gwei");
+        var address     = acc;
+        var value       = web3.toWei(parseInt(amount), "ether");
+
+         instance.invest.sendTransaction(value, {gas: gas, gasPrice: gasPrice, value: value, from: address}, function(err, tnx) {
+             if (err) 
+                throw err;
+             else
+                success(tnx);
+         });
     };
 
 module.exports = new blockchain();

@@ -52,28 +52,50 @@ bot.dialog('/accounts',[
     },
     function (session, results) {
         session.userData.selection = results.response.entity;
-    
         session.send("Ok, balance for account [" + session.userData.selection + "] ...");
-    },
-    function(session) {
-        blockchain.getBalance(session.userData.selection, function(balance){
-            session.send("Account balance for " + session.userData.selection + " is " + balance);
-            session.beginDialog('/end');
-        });
+        session.beginDialog('/balance');
     }
 ]);
 
 bot.dialog('/end',[
     function(session) {
         session.send("Ciao " + session.userData.name + " !");
+        session.beginDialog('/');
     }
 ]);
 
 bot.dialog('/error',[
     function(session) {
         session.send("Ops, " + session.userData.name + " I've got a problem here");
+        session.beginDialog('/');
     }
 ]);
+
+bot.dialog('/balance',[
+    function(session) {
+
+        console.log('get balance called');
+    
+        blockchain.createAccounts(function(addr) {
+
+            console.log('blockchain.createAccounts called.');
+        
+            if(addr) {
+                if(Array.isArray(addr)) {
+                    if(addr.length > 0) {
+                        console.log('blockchain.getBalance is about to call for account: ' + session.userData.selection);
+                        blockchain.getBalance(session.userData.selection, function(balance){
+                            console.log('blockchain.getBalance result: ' + balance);
+                            session.send("Account balance for " + session.userData.selection + " is " + balance);
+                            session.beginDialog('/end');
+                        });
+                    }
+                }
+            }
+        });
+    }
+]);
+
 
 if (useEmulator) {
     var restify = require('restify');
