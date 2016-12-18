@@ -6,10 +6,17 @@
   "dependencies": {
     "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
+    "cognitive-service": "0.1.0",
+    "cognitive-services": "^0.1.0",
+    "dotenv-extended": "^1.0.4",
     "elliptic-curve": "^0.1.0",
     "eth-lightwallet": "^2.5.3",
     "hooked-web3-provider": "^1.0.0",
     "keccakjs": "^0.2.1",
+    "needle": "^1.4.2",
+    "request": "^2.79.0",
+    "url": "^0.11.0",
+    "valid-url": "^1.0.9",
     "web3": "0.14.0"
   },
   "devDependencies": {
