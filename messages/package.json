@@ -6,8 +6,6 @@
   "dependencies": {
     "botbuilder": "^3.4.2",
     "botbuilder-azure": "0.0.1",
-    "cognitive-service": "0.1.0",
-    "cognitive-services": "^0.1.0",
     "dotenv-extended": "^1.0.4",
     "elliptic-curve": "^0.1.0",
     "eth-lightwallet": "^2.5.3",
