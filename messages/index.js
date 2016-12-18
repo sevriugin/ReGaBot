@@ -211,7 +211,7 @@ function createSigninCard(session) {
 
 function getSampleCardImages(session) {
     return [
-        builder.CardImage.create(session, 'https://github.com/sevriugin/ReGaBot/blob/master/messages/regabot.png')
+        builder.CardImage.create(session, 'https://raw.githubusercontent.com/sevriugin/ReGaBot/master/messages/regabot.png')
     ];
 }
 
