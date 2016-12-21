@@ -295,7 +295,7 @@ const handleErrorResponse = (session, error) => {
         + " .number: "      + error.number 
         + " .name: "        + error.name
         + " .toString(): "  + error.toString());
-    session.send(error);
+    session.send("Access token : " + process.env.MICROSOFT_VISION_API_KEY);
     console.error(error);
 }
 
