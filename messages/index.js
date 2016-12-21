@@ -289,7 +289,7 @@ const handleSuccessResponse = (session, caption) => {
 }
 
 const handleErrorResponse = (session, error) => {
-    session.send("Oops! Something went wrong. Try again later.");
+    session.send("Oops! Something went wrong. Try again later. Error message: " + error.message);
     console.error(error);
 }
 
