@@ -27,6 +27,7 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 });
 
 var bot = new builder.UniversalBot(connector);
+var addId = null;
 
 //Sends greeting message when the bot is first added to a conversation
 bot.on('conversationUpdate', message => {
@@ -53,6 +54,12 @@ bot.dialog('/', [
         // attach the card to the reply message
         var msg = new builder.Message(session).addAttachment(card);
         session.send(msg);
+        
+        var address = JSON.stringify(session.message.address);
+        if(addId == null || addId != session.message.address.id) {
+            session.send('address = '+ address);
+            addId = session.message.address.id;
+        }
     }
 ]);
 
@@ -162,21 +169,19 @@ function createCard(selectedCardName, session) {
 }
 
 function createHeroCard(session) {
-    var address = JSON.stringify(session.message.address);
     return new builder.HeroCard(session)
         .title('ReGa Risk Sharing')
         .subtitle('ReGa Bot — wherever ReGa members are talking')
-        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it. address = ' + address)
+        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it.')
         .images(getSampleCardImages(session))
         .buttons(getImageDialogActions(session));
 }
 
 function createThumbnailCard(session) {
-    var address = JSON.stringify(session.message.address);
     return new builder.ThumbnailCard(session)
         .title('ReGa Risk Sharing')
         .subtitle('ReGa Bot — wherever ReGa members are talking')
-        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it. address = ' + address)
+        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it.')
         .images(getSampleCardImages(session))
         .buttons(getImageDialogActions(session));
 }
