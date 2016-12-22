@@ -46,9 +46,9 @@ bot.beginDialogAction('beginImageDialog', '/image');
 bot.beginDialogAction('beginEthereumDialog', '/accounts');
 
 bot.dialog('/', [
-    function (session) {
+    function (session, args) {
 
-        var card = createCard(ThumbnailCardName, session);
+        var card = createCard(HeroCardName, session);
 
         // attach the card to the reply message
         var msg = new builder.Message(session).addAttachment(card);
@@ -162,19 +162,21 @@ function createCard(selectedCardName, session) {
 }
 
 function createHeroCard(session) {
+    var address = JSON.stringify(session.message.address);
     return new builder.HeroCard(session)
-        .title('BotFramework Hero Card')
-        .subtitle('Your bots — wherever your users are talking')
-        .text('Build and connect intelligent bots to interact with your users naturally wherever they are, from text/sms to Skype, Slack, Office 365 mail and other popular services.')
+        .title('ReGa Risk Sharing')
+        .subtitle('ReGa Bot — wherever ReGa members are talking')
+        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it. address = ' + address)
         .images(getSampleCardImages(session))
-        .buttons(getSampleCardActions(session));
+        .buttons(getImageDialogActions(session));
 }
 
 function createThumbnailCard(session) {
+    var address = JSON.stringify(session.message.address);
     return new builder.ThumbnailCard(session)
         .title('ReGa Risk Sharing')
         .subtitle('ReGa Bot — wherever ReGa members are talking')
-        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it.')
+        .text('I can check your Ethereum account balance and you can try sending me an image or an image URL and I will describe it. address = ' + address)
         .images(getSampleCardImages(session))
         .buttons(getImageDialogActions(session));
 }
