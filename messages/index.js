@@ -119,24 +119,52 @@ bot.dialog('/', [
         
         session.userData.pin = results.response;
 
-        // save pin
-        Users.add(session.message.address.user.id, session.userData.pin, function(err, user) {
+        // check if user already in database
+        Users.authUser(session.message.address.user.id, session.userData.pin, function(err, user) {
             if(err) {
-                session.send(err.message);
+                if(err.code === 'USER_NOT_FOUND') {
+                    // not found add new one
+                    Users.add(session.message.address.user.id, session.userData.pin, function(err, user) {
+                        if(err) {
+                            session.send(err.message);
+                        }
+                        else {
+                            session.send("New user added, need to link Yandex wallet");
+                            // need to link Yandex wallet to the account
+                            Sessions.add(session.message.address, function(err, sessionAddress) {
+                                if(err) {
+                                    session.send(err.message);
+                                }
+                                else {
+                                    var url = yandexMoney.buildTokenUrl(sessionAddress.id);
+                                    session.send(url);
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    if(err.code === 'USER_NOT_AUTHENTICATED') {
+                        session.send("Old user, need to re-link Yandex wallet");
+                        // need to link Yandex wallet to the account
+                        Sessions.add(session.message.address, function(err, sessionAddress) {
+                            if(err) {
+                                session.send(err.message);
+                            }
+                            else {
+                                var url = yandexMoney.buildTokenUrl(sessionAddress.id);
+                                session.send(url);
+                            }
+                        });
+                    }
+                    else {
+                        session.send(err.message);
+                    }
+                }
             }
             else {
-                session.send("pin saved");
-            }
-        });
-
-        // save session address
-        Sessions.add(session.message.address, function(err, sessionAddress) {
-            if(err) {
-                session.send(err.message);
-            }
-            else {
-                var url = yandexMoney.buildTokenUrl(sessionAddress.id);
-                session.send(url);
+                session.send("Autorized");
+                session.beginDialog('/yabalance');
             }
         });
     }
@@ -192,7 +220,15 @@ bot.dialog('/yabalance',[
 
 bot.dialog('/yap2p',[
     function (session) {
-        builder.Prompts.number(session, "Enter destination wallet number?"); 
+        builder.Prompts.choice(session, "Make a Transfer?", ["yes","no"]); 
+    },
+    function (session, results, next) {
+        if (results.response && results.response.entity == "yes") {
+            next();
+        } else {
+            session.send("starting over...");
+            session.beginDialog('/');
+        }
     },
     function (session, results) {
         if (results.response) {

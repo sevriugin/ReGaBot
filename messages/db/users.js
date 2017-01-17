@@ -79,13 +79,19 @@ userSchema.virtual('accessToken')
  * Method for encrypt pin-code
  */
 userSchema.methods.encryptPassword = function(pin) {
-	return crypto.createHmac('md5', new Buffer(this.salt, 'utf-8')).update(new Buffer(pin, 'utf-8')).digest('hex');
+	console.info(`encryptPassword pin : ` + pin.toString());
+	console.info(`encryptPassword salt: ` + this.salt);
+	return crypto.createHmac('md5', this.salt).update(pin.toString()).digest('hex');
 };
 
 /**
  * Method for checking pin-code
  */
 userSchema.methods.checkPassword = function(pin) {
+	console.info(`checkPassword pin : ` + pin.toString());
+	console.info(`checkPassword salt: ` + this.salt);
+	console.info(`checkPassword hash: ` + this.pin);
+	console.info(`checkPassword enc : ` + this.encryptPassword(pin));
 	return this.encryptPassword(pin) === this.pin;
 };
 
