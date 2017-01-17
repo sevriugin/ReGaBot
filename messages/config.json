@@ -1,0 +1,19 @@
+{
+	"yandexAPI": {
+		"clientId": "5A293727CE1557D6AFDDC151C8355C11FDA0526F925A77315170160CD01BE31A",
+        "clientSecret" : "8DF622C2218A1B9CE5A9CF22C3161288F7F00F5B4CBC42519C8A18FB489FE2CB401C316945E9A7E725875008EACC52A339ECDC5FC4026D3750FED06E2DCA5133",
+		"scope": ["account-info","operation-history","operation-details","incoming-transfers","payment-p2p","payment-shop"], 
+		"response_type": "code",
+		"redirectURI": "http://localhost:3978/api/yandex"
+	},
+	"telegramAPI": {
+		"token": "give token BotFather"
+	},
+	"db": {
+		"url": "mongodb://localhost:27017/regabot",
+		"options": {
+			"user": "bot",
+			"pass": "bot1201"
+		}
+	}
+}

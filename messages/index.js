@@ -15,7 +15,19 @@ var blockchain = require("./blockchain");
 const   captionService = require('./caption-service'),
         needle = require("needle"),
         url = require('url'),
-        validUrl = require('valid-url');
+        validUrl = require('valid-url'),
+        db = require('./db'), 
+        Users = require('mongoose').model('Users'),
+        Sessions = require('mongoose').model('Sessions'),
+        yandexMoney = require('./yandexMoney'),
+        config  = require('./config'),
+        bodyParser  = require('body-parser');
+
+//create application/json parser 
+var jsonParser          = bodyParser.json()
+ 
+// create application/x-www-form-urlencoded parser 
+var urlencodedParser    = bodyParser.urlencoded({ extended: true })
 
 var useEmulator = (process.env.NODE_ENV == 'development');
 
@@ -28,6 +40,53 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 
 var bot = new builder.UniversalBot(connector);
 var addId = null;
+
+/**
+ * YaMoney auth GET middleware
+ */
+function getAccessToken(req, res, next) {
+    if (!req.query.code) return next(new Error(`code expected`));
+    var code = req.query.code;
+    var tokenComplete = function (err, data) {
+        if (err) return next(new TokenError(`Error: did not get the token: ${err}`));
+
+        console.info(`tokenComplete data: ` + JSON.stringify(data));
+        
+        var sessionId   = req.query.sessionId;  
+        var accessToken = data.access_token;
+        
+        // If token has not been received
+        if (accessToken === undefined) return next(new TokenError(`Acess token is undefined.`));
+        else if (sessionId === undefined) return next(new Error(`Session is not defined.`));
+
+        // restore session
+        Sessions.findById(sessionId, function(err, address) {
+            
+            if (err) return next(err);
+            
+            var userId = address.user.id;
+            // Save user access token to DB
+            Users.setUserToken(userId, accessToken, function(err) {
+                if (err) return next(new Error(`Try another time.`));
+                console.info(`Added token for ${userId}`);
+            });
+        
+            // Send success status
+            res.status(200);
+            res.end();
+        
+            // let msg = new builder.Message()
+            //  .address(address)
+            //  .text("Great! U R Autorized...");
+            // bot.send(msg);
+            
+            console.info(`tokenComplete address: ` + JSON.stringify(address));
+            bot.beginDialog({id:address.id, user:address.user, bot:address.bot, channelId:address.channelId, conversation:address.conversation, serviceUrl:address.serviceUrl},'/yabalance');
+        });
+    };
+    yandexMoney.getAccessToken(config.yandexAPI.clientId, code, config.yandexAPI.redirectURI, config.yandexAPI.clientSecret, tokenComplete);
+}
+
 
 //Sends greeting message when the bot is first added to a conversation
 bot.on('conversationUpdate', message => {
@@ -47,19 +106,39 @@ bot.beginDialogAction('beginImageDialog', '/image');
 bot.beginDialogAction('beginEthereumDialog', '/accounts');
 
 bot.dialog('/', [
-    function (session, args) {
+    function (session) {
+        builder.Prompts.number(session, "Enter pin to acess your account");
+    },
+    function (session, results) {
 
-        var card = createCard(HeroCardName, session);
+        // var card = createCard(HeroCardName, session);
 
         // attach the card to the reply message
-        var msg = new builder.Message(session).addAttachment(card);
-        session.send(msg);
+        // var msg = new builder.Message(session).addAttachment(card);
+        // session.send(msg);
         
-        var address = JSON.stringify(session.message.address);
-        if(addId == null || addId != session.message.address.id) {
-            session.send('address = '+ address);
-            addId = session.message.address.id;
-        }
+        session.userData.pin = results.response;
+
+        // save pin
+        Users.add(session.message.address.user.id, session.userData.pin, function(err, user) {
+            if(err) {
+                session.send(err.message);
+            }
+            else {
+                session.send("pin saved");
+            }
+        });
+
+        // save session address
+        Sessions.add(session.message.address, function(err, sessionAddress) {
+            if(err) {
+                session.send(err.message);
+            }
+            else {
+                var url = yandexMoney.buildTokenUrl(sessionAddress.id);
+                session.send(url);
+            }
+        });
     }
 ]);
 
@@ -91,6 +170,42 @@ bot.dialog('/end',[
     function(session) {
         session.send("Ciao " + session.userData.name + " !");
         session.beginDialog('/');
+    }
+]);
+
+bot.dialog('/yabalance',[
+    function (session) {
+        builder.Prompts.choice(session, "Show yandex wallet balance?", ["yes","no"]); 
+    },
+    function (session, results) {
+        if (results.response && results.response.entity == "yes") {
+            yandexMoney.getAccountInfo(session.message.user.id, function(msg, action) {
+                session.send(msg);
+                session.beginDialog('/yap2p');   
+            });
+        } else {
+            session.send("no");
+            session.beginDialog('/');
+        }
+    }
+]);
+
+bot.dialog('/yap2p',[
+    function (session) {
+        builder.Prompts.number(session, "Enter destination wallet number?"); 
+    },
+    function (session, results) {
+        if (results.response) {
+            var account = results.response;
+            var amount = 10;
+            var msg = "Transfer from ReGaBot user " + session.message.user.id;
+            yandexMoney.p2pPayment(session.message.user.id, account, amount, msg, function(msg, action) {
+                session.send(msg);    
+            });
+        } else {
+            session.send("Ops, there is no account number, starting over");
+            session.beginDialog('/');
+        }
     }
 ]);
 
@@ -146,6 +261,8 @@ bot.dialog('/image', session => {
         session.send("Did you upload an image? I'm more of a visual person. Try sending me an image or an image URL");
     }
 });
+
+
 
 const HeroCardName = 'Hero card';
 const ThumbnailCardName = 'Thumbnail card';
@@ -310,9 +427,12 @@ const handleErrorResponse = (session, error) => {
 if (useEmulator) {
     var restify = require('restify');
     var server = restify.createServer();
+    server.use(restify.queryParser({ mapParams: false }));
+
     server.listen(3978, function() {
         console.log('test bot endpont at http://localhost:3978/api/messages');
     });
+    server.get('/api/yandex', getAccessToken);
     server.post('/api/messages', connector.listen());    
 } else {
     module.exports = { default: connector.listen() }
