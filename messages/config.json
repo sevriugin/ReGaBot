@@ -4,12 +4,20 @@
         "clientSecret" : "8DF622C2218A1B9CE5A9CF22C3161288F7F00F5B4CBC42519C8A18FB489FE2CB401C316945E9A7E725875008EACC52A339ECDC5FC4026D3750FED06E2DCA5133",
 		"scope": ["account-info","operation-history","operation-details","incoming-transfers","payment-p2p","payment-shop"], 
 		"response_type": "code",
-		"redirectURI": "http://localhost:3978/api/yandex"
+		"redirectURI": "https://RSBot.azurewebsites.net/api/yandex",
+		"redirectURI_local": "http://localhost:3978/api/yandex"
 	},
 	"telegramAPI": {
 		"token": "give token BotFather"
 	},
 	"db": {
+		"url": "mongodb://rega.documents.azure.com:10250/regabot",
+		"options": {
+			"user": "rega",
+			"pass": "fvVIoXATwamyHNFwqy33SLROxF7aNLy2QxQwz164V0k8j0jj94ERhXquWUUn8tm2jguTa28UaDsfLAKM2BHygA=="
+		}
+	},
+	"db_local": {
 		"url": "mongodb://localhost:27017/regabot",
 		"options": {
 			"user": "bot",
