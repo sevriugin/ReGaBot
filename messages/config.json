@@ -4,7 +4,7 @@
         "clientSecret" : "8DF622C2218A1B9CE5A9CF22C3161288F7F00F5B4CBC42519C8A18FB489FE2CB401C316945E9A7E725875008EACC52A339ECDC5FC4026D3750FED06E2DCA5133",
 		"scope": ["account-info","operation-history","operation-details","incoming-transfers","payment-p2p","payment-shop"], 
 		"response_type": "code",
-		"redirectURI": "https://RSBot.azurewebsites.net/api/yandex?code=UzKHGbW4zQg0K3tCDF90bg/9sMN405S9cghaC11FBcv3jKBUrF9wSQ==",
+		"redirectURI": "http://rsbot.azurewebsites.net/api/yandex",
 		"redirectURI_local": "http://localhost:3978/api/yandex"
 	},
 	"telegramAPI": {
