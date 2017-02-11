@@ -91,14 +91,28 @@ function getAccessToken(req, res, next) {
 //Sends greeting message when the bot is first added to a conversation
 bot.on('conversationUpdate', message => {
     if (message.membersAdded) {
+
+        var botIsAdded = false;
+
         message.membersAdded.forEach(identity => {
             if (identity.id === message.address.bot.id) {
+                botIsAdded = true;
                 const reply = new builder.Message()
                     .address(message.address)
                     .text("Ciao! I am ReGa Bot. Type something to start...");
                 bot.send(reply);
             }
         });
+
+        if(!botIsAdded) {
+            message.membersAdded.forEach(identity => {
+                const reply = new builder.Message()
+                    .address(message.address)
+                    .text(`${identity.name}, Ciao! Welcome to the chat`);
+                bot.send(reply);
+                bot.beginDialog({id:message.address.id, user:identity, bot:message.address.bot, channelId:message.address.channelId, conversation:message.address.conversation, serviceUrl:message.address.serviceUrl}, '/');
+            });
+        }
     }
 });
 
@@ -230,7 +244,10 @@ bot.dialog('/yap2p',[
             session.beginDialog('/');
         }
     },
-    function (session, results) {
+    function (session, results, next) {
+        builder.Prompts.number(session, "Enter destination Yandex Wallet number"); 
+    },
+    function (session, results, next) {
         if (results.response) {
             var account = results.response;
             var amount = 10;
