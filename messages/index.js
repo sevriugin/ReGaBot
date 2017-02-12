@@ -476,6 +476,7 @@ const handleErrorResponse = (session, error) => {
     console.error(error);
 }
 
+server.get('/api/yandex', getAccessToken);
 
 if (useEmulator) {
     var restify = require('restify');
@@ -484,8 +485,7 @@ if (useEmulator) {
 
     server.listen(3978, function() {
         console.log('test bot endpont at http://localhost:3978/api/messages');
-    });
-    server.get('/api/yandex', getAccessToken);
+    });    
     server.post('/api/messages', connector.listen());    
 } else {
     module.exports = { default: connector.listen() }
