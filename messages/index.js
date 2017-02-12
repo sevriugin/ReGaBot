@@ -488,5 +488,5 @@ if (useEmulator) {
     server.get('/api/yandex', getAccessToken);
     server.post('/api/messages', connector.listen());    
 } else {
-    module.exports = { '/api/yandex':getAccessToken, default: connector.listen() }
+    module.exports = { '/api/yandex':getAccessToken, entryPoint: connector.listen() }
 }
