@@ -40,6 +40,7 @@ var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure
 
 var bot = new builder.UniversalBot(connector);
 var addId = null;
+var listen = connector.listen();
 
 /**
  * YaMoney auth GET middleware
@@ -87,6 +88,15 @@ function getAccessToken(req, res, next) {
     yandexMoney.getAccessToken(config.yandexAPI.clientId, code, config.yandexAPI.redirectURI, config.yandexAPI.clientSecret, tokenComplete);
 }
 
+function botRouter(req, res) {
+    if(req.path === '/yandex') {
+        console.info('botRouter: call /yandex processor function')
+        getAccessToken(req, res, null); 
+    }
+    else {
+        listen(req, res);
+    }
+}
 
 //Sends greeting message when the bot is first added to a conversation
 bot.on('conversationUpdate', message => {
@@ -488,6 +498,6 @@ if (useEmulator) {
     server.get('/api/yandex', getAccessToken);
     server.post('/api/messages', connector.listen());    
 } else {
-    server.post('/api/yandex', getAccessToken);
-    module.exports = { default: connector.listen() }
+    // module.exports = { default: connector.listen() }
+    module.exports = { default: botRouter }
 }
