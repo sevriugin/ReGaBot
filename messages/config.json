@@ -24,5 +24,11 @@
 			"user": "bot",
 			"pass": "bot1201"
 		}
+	},
+	"azure_storage": {
+		"name":"regabotQueue",
+		"account": "rsbotvhamtt",
+		"key1": "ShCx6+gN57RZgdu/y8Y++4W0buC9ntbk2xl31aILuBfmV53PcZLFIe3LHE0GUsQpn2tsqEMCrY3mSp2LRqZkGg==",
+		"key2": "Lct8qv9r90JHBOGqYjJtNRNkwLNT/n/RI5g7pqeb0l1RthhR6L3FIH+UUlbQ3zKhftuRut5C/rvIsNzqUpyxSQ=="
 	}
 }

@@ -20,6 +20,7 @@
     "valid-url": "^1.0.9",
     "web3": "0.14.0",
     "body-parser": "1.15.2",
+    "azure-storage":"^2.0.0",
     "yandex-money-sdk": "0.1.6"
   },
   "devDependencies": {

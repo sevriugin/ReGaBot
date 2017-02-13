@@ -11,6 +11,15 @@ require('dotenv-extended').load();
 var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var blockchain = require("./blockchain");
+var azure = require('azure-storage');
+var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1);
+
+queueService.createQueueIfNotExists(config.azure_storage.name, function(error) {
+    if (!error) {
+        // Queue exists
+        console.info(`createQueueIfNotExists: Queue is created` + config.azure_storage.name);
+    }
+});
 
 const   captionService = require('./caption-service'),
         needle = require("needle"),
@@ -162,6 +171,19 @@ bot.dialog('/', [
                                 else {
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
+                                    // get message from the WebHook
+                                    queueService.getMessages(config.azure_storage.name, function(error, serverMessages) {
+                                        if (!error) {
+                                            // Process the message in less than 30 seconds, the message
+                                            // text is available in serverMessages[0].messageText
+                                            session.send(serverMessages[0].messageText);
+                                            queueService.deleteMessage(queueName, serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
+                                                if (!error) {
+                                                    // Message deleted
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
                         }

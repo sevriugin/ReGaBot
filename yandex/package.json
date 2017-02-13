@@ -4,6 +4,7 @@
   "description": "ReGa Risk Sharing BOT",
   "main": "index.js",
   "dependencies": {
+    "azure-storage":"^2.0.0",
     "mongodb": "^2.2.20",
     "mongoose": "4.7.6",
     "needle": "^1.4.2",
