@@ -27,7 +27,7 @@ module.exports = function(context, req) {
         };
     }
 
-    queueService.createMessage(config.azure_storage.name, 'Message from Yandex!', function(error) {
+    queueService.createMessage('myqueue', 'Message from Yandex!', function(error) {
         if (!error) {
             // Message inserted
             console.info(`createMessage: Message is inserted`);
