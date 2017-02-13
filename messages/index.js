@@ -24,7 +24,8 @@ const   captionService = require('./caption-service'),
         config  = require('./config'),
         bodyParser  = require('body-parser');
 
-var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1);
+var retryOperations = new azure.ExponentialRetryPolicyFilter();
+var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1).withFilter(retryOperations);
 queueService.createQueueIfNotExists('myqueue', function(error) {
     if (!error) {
         // Queue exists
