@@ -4,7 +4,7 @@ var config  = require('../messages/config');
 var azure   = require('azure-storage');
 var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1);
 
-queueService.createQueueIfNotExists('regabotQueue', function(error) {
+queueService.createQueueIfNotExists('myqueue', function(error) {
     if (!error) {
         // Queue exists
         console.info(`createQueueIfNotExists: Queue is created` + config.azure_storage.name);
