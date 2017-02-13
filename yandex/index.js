@@ -6,7 +6,8 @@ https://docs.botframework.com/en-us/node/builder/chat/dialogs/#waterfall
 "use strict";
 
 function testHook(req, res) {
-    res.send('Test Webhook ...');
+    res.status(200);
+    res.end();
 }
 
 module.exports = { default: testHook }
