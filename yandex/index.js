@@ -65,5 +65,8 @@ function getAccessToken(req, res, next) {
     yandexMoney.getAccessToken(config.yandexAPI.clientId, code, config.yandexAPI.redirectURI, config.yandexAPI.clientSecret, tokenComplete);
 }
 
+function testHook(req, res) {
+    res.send('Test Webhook ...');
+}
 
-module.exports = { default: getAccessToken }
+module.exports = { default: testHook }
