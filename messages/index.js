@@ -12,14 +12,6 @@ var builder = require("botbuilder");
 var botbuilder_azure = require("botbuilder-azure");
 var blockchain = require("./blockchain");
 var azure = require('azure-storage');
-var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1);
-
-queueService.createQueueIfNotExists(config.azure_storage.name, function(error) {
-    if (!error) {
-        // Queue exists
-        console.info(`createQueueIfNotExists: Queue is created` + config.azure_storage.name);
-    }
-});
 
 const   captionService = require('./caption-service'),
         needle = require("needle"),
@@ -31,6 +23,14 @@ const   captionService = require('./caption-service'),
         yandexMoney = require('./yandexMoney'),
         config  = require('./config'),
         bodyParser  = require('body-parser');
+
+var queueService = azure.createQueueService(config.azure_storage.account, config.azure_storage.key1);
+queueService.createQueueIfNotExists(config.azure_storage.name, function(error) {
+    if (!error) {
+        // Queue exists
+        console.info(`createQueueIfNotExists: Queue is created` + config.azure_storage.name);
+    }
+});
 
 //create application/json parser 
 var jsonParser          = bodyParser.json()
