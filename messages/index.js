@@ -498,6 +498,5 @@ if (useEmulator) {
     server.get('/api/yandex', getAccessToken);
     server.post('/api/messages', connector.listen());    
 } else {
-    // module.exports = { default: connector.listen() }
-    module.exports = { default: botRouter }
+    module.exports = { default: connector.listen(), bot:bot }
 }
