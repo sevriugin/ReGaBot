@@ -6,7 +6,7 @@ module.exports = function(context, req) {
     if (req.query.code || (req.body && req.body.code)) {
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: "Hello " + (req.query.code || req.body.code)
+            body: "code=" + (req.query.code || req.body.code) + " sessionId=" + req.query.sessionId
         };
     }
     else {
