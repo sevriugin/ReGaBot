@@ -27,19 +27,10 @@ module.exports = function(context, req) {
         };
     }
 
-    var queue = req.query.sessionId;
-    var msg = (req.query.code || req.body.code);
-    
-    queueService.createQueueIfNotExists(queue, function(error) {
+    queueService.createMessage('myqueue', {sessionId:req.query.sessionId, code:(req.query.code || req.body.code)}, function(error) {
         if (!error) {
-            // Queue exists
-            console.info(`createQueueIfNotExists: Queue is created` + queue);
-            queueService.createMessage(queue, msg, function(error) {
-                if (!error) {
-                    // Message inserted
-                    console.info(`createMessage: Message is inserted`);
-                }
-            });
+            // Message inserted
+            console.info(`createMessage: Message is inserted`);
         }
     });
 

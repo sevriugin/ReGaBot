@@ -108,7 +108,7 @@ function botRouter(req, res) {
     }
 }
 
-function getMessage(error, serverMessages, cb) {
+function getMessage(error, serverMessages, session, cb) {
     if (!error) {
         // Process the message in less than 30 seconds, the message
         // text is available in serverMessages[0].messageText
@@ -123,7 +123,7 @@ function getMessage(error, serverMessages, cb) {
         else {
             setTimeout(queueService.getMessages('myqueue', function(error, serverMessages) {
                 if(!error) {
-                    getMessage(error, serverMessages, cb);           
+                    getMessage(error, serverMessages, session, cb);           
                 }
             }), 3000);
         }
@@ -195,19 +195,12 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    var queue = sessionAddress.id;
-                                    queueService.createQueueIfNotExists(queue, function(error) {
-                                        if (!error) {
-                                            // Queue exists
-                                            console.info(`createQueueIfNotExists: Queue is created: ` + queue);
-                                            queueService.getMessages(queue, function(error, serverMessages) {
-                                                if(!error) {
-                                                    getMessage(error, serverMessages, function(msg) {
-                                                        session.send(msg);
-                                                    });
-                                                }    
+                                    queueService.getMessages('myqueue', function(error, serverMessages) {
+                                        if(!error) {
+                                            getMessage(error, serverMessages, sessionAddress.id, function(msg) {
+                                                session.send(msg);
                                             });
-                                        }
+                                        }    
                                     });
                                 }
                             });
