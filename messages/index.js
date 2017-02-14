@@ -108,11 +108,11 @@ function botRouter(req, res) {
     }
 }
 
-function getMessage(error, serverMessages, cb) {
+function getMessage(error, serverMessages, id, cb) {
     if (!error) {
         // Process the message in less than 30 seconds, the message
         // text is available in serverMessages[0].messageText
-        if((serverMessages && Array.isArray(serverMessages)) && serverMessages.length > 0 ) {
+        if(((serverMessages && Array.isArray(serverMessages)) && serverMessages.length > 0) && serverMessages[0].messageText.startsWith(id)) {
             cb(serverMessages[0].messageText);
             queueService.deleteMessage('myqueue', serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
                 if (!error) {
@@ -124,7 +124,7 @@ function getMessage(error, serverMessages, cb) {
             setTimeout(function() {
                 queueService.getMessages('myqueue', function(error, serverMessages) {
                     if(!error) {
-                        getMessage(error, serverMessages, cb);
+                        getMessage(error, serverMessages, id, cb);
                     }
                 });
             }, 3000);
@@ -199,7 +199,7 @@ bot.dialog('/', [
                                     // get message from the WebHook
                                     queueService.getMessages('myqueue', function(error, serverMessages) {
                                         if(!error) {
-                                            getMessage(error, serverMessages, function(msg) {
+                                            getMessage(error, serverMessages, sessionAddress.id, function(msg) {
                                                 session.send(msg);
                                             });
                                         }    
