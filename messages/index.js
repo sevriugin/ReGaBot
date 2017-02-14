@@ -180,7 +180,7 @@ bot.dialog('/', [
                                             if(serverMessages && Array.isArray(serverMessages)) {
                                                 if(serverMessages.length > 0 ) {
                                                     session.send(serverMessages[0].messageText);
-                                                    queueService.deleteMessage(queueName, serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
+                                                    queueService.deleteMessage('myqueue', serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
                                                         if (!error) {
                                                             // Message deleted
                                                         }
