@@ -108,6 +108,24 @@ function botRouter(req, res) {
     }
 }
 
+function getMessage(error, serverMessages, cb) {
+    if (!error) {
+        // Process the message in less than 30 seconds, the message
+        // text is available in serverMessages[0].messageText
+        if((serverMessages && Array.isArray(serverMessages)) && serverMessages.length > 0 ) {
+            cb(serverMessages[0].messageText);
+            queueService.deleteMessage('myqueue', serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
+                if (!error) {
+                    // Message deleted
+                }
+            });
+        }
+        else {
+            setTimeout(queueService.getMessages('myqueue', getMessage(error, serverMessages, cb)), 3000);
+        }
+    }
+}
+
 //Sends greeting message when the bot is first added to a conversation
 bot.on('conversationUpdate', message => {
     if (message.membersAdded) {
@@ -173,21 +191,8 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    queueService.getMessages('myqueue', {numOfMessages: 1, visibilityTimeout: 3 * 60}, function(error, serverMessages) {
-                                        if (!error) {
-                                            // Process the message in less than 30 seconds, the message
-                                            // text is available in serverMessages[0].messageText
-                                            if(serverMessages && Array.isArray(serverMessages)) {
-                                                if(serverMessages.length > 0 ) {
-                                                    session.send(serverMessages[0].messageText);
-                                                    queueService.deleteMessage('myqueue', serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
-                                                        if (!error) {
-                                                            // Message deleted
-                                                        }
-                                                    });
-                                                }
-                                            }
-                                        }
+                                    getMessage(null, null, function(message){
+                                        session.send(message);
                                     });
                                 }
                             });
