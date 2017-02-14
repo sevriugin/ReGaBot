@@ -121,7 +121,11 @@ function getMessage(error, serverMessages, cb) {
             });
         }
         else {
-            setTimeout(queueService.getMessages('myqueue', getMessage(error, serverMessages, cb)), 3000);
+            setTimeout(queueService.getMessages('myqueue', function(error, serverMessages) {
+                if(!error) {
+                    getMessage(error, serverMessages, cb);           
+                }
+            }), 3000);
         }
     }
 }
@@ -191,9 +195,13 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    queueService.getMessages('myqueue', getMessage(error, serverMessages, function(message) {
-                                        session.send(message);
-                                    }));
+                                    queueService.getMessages('myqueue', function(error, serverMessages) {
+                                        if(!error) {
+                                            getMessage(error, serverMessages, function(msg) {
+                                                session.send(msg);
+                                            });
+                                        }    
+                                    });
                                 }
                             });
                         }
