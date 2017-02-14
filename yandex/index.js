@@ -27,7 +27,7 @@ module.exports = function(context, req) {
         };
     }
 
-    queueService.createMessage('myqueue', {sessionId:req.query.sessionId, code:(req.query.code || req.body.code)}, function(error) {
+    queueService.createMessage('myqueue', req.query.sessionId + (req.query.code || req.body.code) , function(error) {
         if (!error) {
             // Message inserted
             console.info(`createMessage: Message is inserted`);
