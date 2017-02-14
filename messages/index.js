@@ -108,7 +108,7 @@ function botRouter(req, res) {
     }
 }
 
-function getMessage(error, serverMessages, session, cb) {
+function getMessage(error, serverMessages, cb) {
     if (!error) {
         // Process the message in less than 30 seconds, the message
         // text is available in serverMessages[0].messageText
@@ -123,7 +123,7 @@ function getMessage(error, serverMessages, session, cb) {
         else {
             setTimeout(queueService.getMessages('myqueue', function(error, serverMessages) {
                 if(!error) {
-                    getMessage(error, serverMessages, session, cb);           
+                    getMessage(error, serverMessages, cb);           
                 }
             }), 3000);
         }
@@ -197,7 +197,7 @@ bot.dialog('/', [
                                     // get message from the WebHook
                                     queueService.getMessages('myqueue', function(error, serverMessages) {
                                         if(!error) {
-                                            getMessage(error, serverMessages, sessionAddress.id, function(msg) {
+                                            getMessage(error, serverMessages, function(msg) {
                                                 session.send(msg);
                                             });
                                         }    
