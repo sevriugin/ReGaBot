@@ -98,6 +98,50 @@ function getAccessToken(req, res, next) {
     yandexMoney.getAccessToken(config.yandexAPI.clientId, code, config.yandexAPI.redirectURI, config.yandexAPI.clientSecret, tokenComplete);
 }
 
+function getAccessTokenFromeCode(session, code) {
+
+    var tokenComplete = function (err, data) {
+        if (err) {
+            session.send(err);
+            return;
+        }
+
+        console.info(`tokenComplete data: ` + JSON.stringify(data));
+        
+        var sessionId   = session.message.address.id;  
+        var accessToken = data.access_token;
+        
+        // If token has not been received
+        if (accessToken === undefined) {
+            session.send(`Acess token is undefined.`);
+            return;
+        }
+
+        // restore session
+        Sessions.findById(sessionId, function(err, address) {
+            
+            if (err) {
+                session.send(err);
+                return;
+            }
+            
+            var userId = address.user.id;
+            // Save user access token to DB
+            Users.setUserToken(userId, accessToken, function(err) {
+                if (err) {
+                    session.send(err);
+                    return;
+                }
+                console.info(`Added token for ${userId}`);
+            });
+            
+            console.info(`tokenComplete address: ` + JSON.stringify(address));
+            session.beginDialog('/yabalance');
+        });
+    };
+    yandexMoney.getAccessToken(config.yandexAPI.clientId, code, config.yandexAPI.redirectURI, config.yandexAPI.clientSecret, tokenComplete);
+}
+
 function botRouter(req, res) {
     if(req.path === '/yandex') {
         console.info('botRouter: call /yandex processor function')
@@ -201,7 +245,8 @@ bot.dialog('/', [
                                     queueService.getMessages('myqueue', function(error, serverMessages) {
                                         if(!error) {
                                             getMessage(error, serverMessages, sessionAddress.id, function(msg) {
-                                                session.send(msg);
+                                                // session.send(msg);
+                                                getAccessTokenFromeCode(session, msg);
                                             });
                                         }    
                                     });
