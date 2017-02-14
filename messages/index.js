@@ -191,7 +191,7 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    getMessage(null, null, function(message){
+                                    queueService.getMessages('myqueue', getMessage(error, serverMessages, function(message) {
                                         session.send(message);
                                     });
                                 }
