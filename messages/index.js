@@ -113,7 +113,8 @@ function getMessage(error, serverMessages, id, cb) {
         // Process the message in less than 30 seconds, the message
         // text is available in serverMessages[0].messageText
         if(((serverMessages && Array.isArray(serverMessages)) && serverMessages.length > 0) && serverMessages[0].messageText.startsWith(id)) {
-            cb(serverMessages[0].messageText);
+            var code = serverMessages[0].messageText.slice(id.length);
+            cb(code);
             queueService.deleteMessage('myqueue', serverMessages[0].messageId, serverMessages[0].popReceipt, function(error) {
                 if (!error) {
                     // Message deleted
