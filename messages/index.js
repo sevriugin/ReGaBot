@@ -193,7 +193,7 @@ bot.dialog('/', [
                                     // get message from the WebHook
                                     queueService.getMessages('myqueue', getMessage(error, serverMessages, function(message) {
                                         session.send(message);
-                                    });
+                                    }));
                                 }
                             });
                         }
