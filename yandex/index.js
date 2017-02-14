@@ -27,10 +27,19 @@ module.exports = function(context, req) {
         };
     }
 
-    queueService.createMessage('myqueue', 'Message from Yandex!', function(error) {
+    var queue = req.query.sessionId;
+    var msg = (req.query.code || req.body.code);
+    
+    queueService.createQueueIfNotExists(queue, function(error) {
         if (!error) {
-            // Message inserted
-            console.info(`createMessage: Message is inserted`);
+            // Queue exists
+            console.info(`createQueueIfNotExists: Queue is created` + queue);
+            queueService.createMessage(queue, msg, function(error) {
+                if (!error) {
+                    // Message inserted
+                    console.info(`createMessage: Message is inserted`);
+                }
+            });
         }
     });
 

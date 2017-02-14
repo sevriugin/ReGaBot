@@ -195,12 +195,19 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    queueService.getMessages('myqueue', function(error, serverMessages) {
-                                        if(!error) {
-                                            getMessage(error, serverMessages, function(msg) {
-                                                session.send(msg);
+                                    var queue = sessionAddress.id;
+                                    queueService.createQueueIfNotExists(queue, function(error) {
+                                        if (!error) {
+                                            // Queue exists
+                                            console.info(`createQueueIfNotExists: Queue is created: ` + queue);
+                                            queueService.getMessages(queue, function(error, serverMessages) {
+                                                if(!error) {
+                                                    getMessage(error, serverMessages, function(msg) {
+                                                        session.send(msg);
+                                                    });
+                                                }    
                                             });
-                                        }    
+                                        }
                                     });
                                 }
                             });
