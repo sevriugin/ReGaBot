@@ -121,11 +121,13 @@ function getMessage(error, serverMessages, cb) {
             });
         }
         else {
-            setTimeout(queueService.getMessages('myqueue', function(error, serverMessages) {
-                if(!error) {
-                    getMessage(error, serverMessages, cb);           
-                }
-            }), 3000);
+            setTimeout(function() {
+                queueService.getMessages('myqueue', function(error, serverMessages) {
+                    if(!error) {
+                        getMessage(error, serverMessages, cb);
+                    }
+                });
+            }, 3000);
         }
     }
 }
