@@ -173,7 +173,7 @@ bot.dialog('/', [
                                     var url = yandexMoney.buildTokenUrl(sessionAddress.id);
                                     session.send(url);
                                     // get message from the WebHook
-                                    queueService.getMessages('myqueue', function(error, serverMessages) {
+                                    queueService.getMessages('myqueue', {numOfMessages: 1, visibilityTimeout: 3 * 60}, function(error, serverMessages) {
                                         if (!error) {
                                             // Process the message in less than 30 seconds, the message
                                             // text is available in serverMessages[0].messageText
