@@ -19,7 +19,7 @@ module.exports = function(context, req) {
             // status: 200, /* Defaults to 200 */
             // body: "code=" + (req.query.code || req.body.code) + " sessionId=" + req.query.sessionId
             status: 301,
-            header: "Location: https://telegram.me/ReGaRSBot"
+            headers: { "Content-Type": "text/html", "Location": "http://www.example.org/" }
         };
     }
     else {
