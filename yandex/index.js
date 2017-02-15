@@ -17,7 +17,9 @@ module.exports = function(context, req) {
     if (req.query.code || (req.body && req.body.code)) {
         context.res = {
             // status: 200, /* Defaults to 200 */
-            body: "code=" + (req.query.code || req.body.code) + " sessionId=" + req.query.sessionId
+            // body: "code=" + (req.query.code || req.body.code) + " sessionId=" + req.query.sessionId
+            status: 301,
+            header: {Location: "https://telegram.me/ReGaRSBot"}
         };
     }
     else {
