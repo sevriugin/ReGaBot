@@ -2,8 +2,8 @@
   "disabled": false,
   "bindings": [
     {
-      "authLevel": "anonymous",
       "type": "httpTrigger",
+      "webHookType": "Slack",
       "direction": "in",
       "name": "req"
     },
