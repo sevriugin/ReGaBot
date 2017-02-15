@@ -2,8 +2,8 @@
   "disabled": false,
   "bindings": [
     {
+      "authLevel": "anonymous",
       "type": "httpTrigger",
-      "webHookType": "github",
       "direction": "in",
       "name": "req"
     },

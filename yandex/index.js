@@ -18,8 +18,9 @@ module.exports = function(context, req) {
         context.res = {
             // status: 200, /* Defaults to 200 */
             // body: "code=" + (req.query.code || req.body.code) + " sessionId=" + req.query.sessionId
-            status: 301,
-            header: "Location: http://www.example.org/"
+            // status: 301,
+            // header: "Location: http://www.example.org/"
+            body: "Please return to the chat..."
         };
     }
     else {
